@@ -20,7 +20,7 @@ public class PharmacyServiceImpl implements PharmacyService {
     }
 
     @Override
-    public Pharmacy gertByIdPharmacy(Long pharmacyId) {
+    public Pharmacy getByIdPharmacy(Long pharmacyId) {
         for (Pharmacy pharmacy : DataBase.pharmacies){
             if (pharmacy.getId().equals(pharmacyId)){
                 return pharmacy;
@@ -33,13 +33,13 @@ public class PharmacyServiceImpl implements PharmacyService {
     public String updatePharmacyById(Long pharmacyId, Pharmacy newPharmacy) {
         for (Pharmacy pharmacy1 : DataBase.pharmacies){
             if (pharmacy1.getId() == pharmacyId){
-                DataBase.pharmacies.set(0,pharmacy1);
-                System.out.println(newPharmacy);
+                pharmacy1.setName(newPharmacy.getName());
+                pharmacy1.setAddress(newPharmacy.getAddress());
+                return  "Успешно обновлен." ;
 
             }
         }
-        System.out.println("Успешно обновлен.");
-        return null;
+        return "Аптека табылган жок: ";
     }
 
     @Override

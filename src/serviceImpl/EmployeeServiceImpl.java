@@ -1,6 +1,7 @@
 package serviceImpl;
 
 import database.DataBase;
+import enums.Position;
 import model.Employee;
 import model.Pharmacy;
 import service.EmployeeService;
@@ -13,12 +14,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public String saveEmployee(Employee employee) {
         DataBase.employees.add(employee);
-        return null;
+        return "Ийгиликтуу кошулду: ";
     }
 
     @Override
-    public boolean assignEmployeeToPharmacy(Long pharmacyId, Long employeeId) {
-    return true;
+    public String assignEmployeeToPharmacy(Long pharmacyId, Long employeeId) {
+        for (Pharmacy pharmacy : DataBase.pharmacies){
+            if (pharmacy.getId() == pharmacyId){
+                for (Employee employee : pharmacy.getEmployees()){
+                    if (employee.getId() == employeeId){
+                        pharmacy.getEmployees().add(employee);
+                        return "Ийгиликтуу кошулду: ";
+                    }
+                }
+            }
+        }
+    return "Табылбады!!!";
     }
 
     @Override
@@ -42,7 +53,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public String updateEmployeeById(Long pharmacyId, Long employeeId, Employee newEmployee) {
-        return null;
+        for (Pharmacy pharmacy : DataBase.pharmacies){
+            if (pharmacy.getId() == pharmacyId){
+                for (Employee employee : pharmacy.getEmployees()){
+                    if (employee.getId() == employeeId){
+                        employee.setFullName(newEmployee.getFullName());
+                        employee.setEmail(newEmployee.getEmail());
+                        employee.setPhoneNumber(newEmployee.getPhoneNumber());
+                        employee.setExperience(newEmployee.getExperience());
+                        employee.setPosition(newEmployee.getPosition());
+                        employee.setGender(newEmployee.getGender());
+                        return "Ийгиликтуу озгорду!!!";
+                    }
+
+                }
+            }
+        }
+
+        return "Табылган жок!!!";
     }
 
     @Override
@@ -59,15 +87,34 @@ public class EmployeeServiceImpl implements EmployeeService {
         return null;
     }
 
-    @Override
     public List<Employee> filterEmployeeByPosition(String position) {
-        List<Employee>filterEmployee = new ArrayList<>();
-        for (Employee employee: DataBase.employees){
-            if (employee.getPosition().equals(position)){
-                filterEmployee.add(employee);
+        List<Employee> admin = new ArrayList<>();
+        List<Employee> pharmacist = new ArrayList<>();
+        List<Employee> teller = new ArrayList<>();
+        if (position.equalsIgnoreCase("ADMIN")){
+            for (Employee employee : DataBase.employees) {
+                if (employee.getPosition().equals(Position.ADMIN)){
+                    admin.add(employee);
+                }
             }
+            return admin;
+        }else if (position.equalsIgnoreCase("PHARMACIST")){
+            for (Employee employee : DataBase.employees) {
+                if (employee.getPosition().equals(Position.PHARMACIST)){
+                    pharmacist.add(employee);
+                }
+            }
+            return pharmacist;
+        } else if (position.equalsIgnoreCase("TELLER")) {
+            for (Employee employee : DataBase.employees) {
+                if (employee.getPosition().equals(Position.TELLER)){
+                    teller.add(employee);
+                }
+            }
+            return teller;
         }
-        return filterEmployee;
+        System.err.println("Туура жазыныз!!!");
+        return null;
     }
 
 }

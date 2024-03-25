@@ -12,30 +12,24 @@ import java.util.List;
 public class MedicineServiceImpl implements MedicineService {
     @Override
     public String addMedicineToPharmacy(Long pharmacyId, Medicine medicine) {
-        Pharmacy pharmacyToAddMedicine = null;
-        for (Pharmacy pharmacy1 : DataBase.pharmacies){
-            if (!pharmacy1.getId().equals(pharmacyId)){
-                pharmacyToAddMedicine =pharmacy1;
-                break;
+            for (Pharmacy pharmacy : DataBase.pharmacies){
+                if (pharmacy.getId() == pharmacyId){
+                    pharmacy.getMedicines().add(medicine);
+                    DataBase.medicines.add(medicine);
+                    return "Кошулду";
+                }
             }
-        }
-        if (pharmacyToAddMedicine == null){
-            return "Pharmacy with ID " + pharmacyId + " not found.";
-        }
-        pharmacyToAddMedicine.setMedicines((List<Medicine>) medicine);
-
-        return "Успешно" + pharmacyId + "Нет ID";
+            return "Аптека id " + pharmacyId + " Табылган жок";
     }
 
     @Override
-    public Medicine getAllMedicineByPharmacyId(Long pharmacyId) {
-        for (Pharmacy medicine : DataBase.pharmacies){
-            if (medicine.getId()==pharmacyId){
-                return medicine.getMedicines();
-            }else {
-                System.out.println("Мындай Id жок ");
+    public List<Medicine> getAllMedicineByPharmacyId(Long pharmacyId) {
+        for (Pharmacy pharmacy : DataBase.pharmacies){
+            if (pharmacy.getId()==pharmacyId){
+               return pharmacy.getMedicines();
             }
         }
+        System.out.println("Аптека id " + pharmacyId + " табылган жок: ");
         return null;
     }
 
@@ -48,42 +42,43 @@ public class MedicineServiceImpl implements MedicineService {
                         return medicine;
                     }
                 }
+                System.out.println("даары id " + medicineId + " табылган жок: ");
+                break;
             }
         }
+        System.out.println("Аптека id " + pharmacyId + " табылган жок: ");
+
         return null;
     }
 
     // Ошибка чыгат барып голикасын сурап текшертип ал
     @Override
     public String updateMedicineById(Long pharmacyId, Long medicineId, Medicine newMedicine) {
-        if (pharmacyId == null || medicineId == null) {
-            return "ID.";
+        for (Pharmacy pharmacy : DataBase.pharmacies){
+            if (pharmacy.getId() == pharmacyId){
+                for (Medicine medicine: pharmacy.getMedicines()){
+                    if (medicine.getId() == medicineId){
+                        medicine.setName(newMedicine.getName());
+                        medicine.setPrice(newMedicine.getPrice());
+                        medicine.setDescription(newMedicine.getDescription());
+                        medicine.setDateOfDelivery(newMedicine.getDateOfDelivery());
+                        medicine.setExpirationDate(newMedicine.getExpirationDate());
+                        return "Ийгиликтуу озгорду";
+                    }
+                }
+            }
         }
-        Medicine existingMedicine = getAllMedicineByPharmacyId(medicineId);
-        if (existingMedicine == null) {
-            return "";
-        }
-
-        if (!existingMedicine.getId().equals(pharmacyId)) {
-            return "";
-        }
-        existingMedicine.setName(newMedicine.getName());
-        existingMedicine.setDescription(newMedicine.getDescription());
-        existingMedicine.setPrice(newMedicine.getPrice());
-
-        getAllMedicineByPharmacyId(existingMedicine.getId());
-
-        return "";
+        return "Табылган жок!!!";
     }
 
     @Override
     public String deleteMedicineById(Long pharmacyId, Long medicineId) {
         for (Pharmacy pharmacy : DataBase.pharmacies){
             if (pharmacy.getId()==pharmacyId){
-                for (Employee employee : DataBase.employees){
-                    if (employee.getId() == medicineId){
-                        DataBase.employees.remove(employee);
-                        return "Удалить успешно " + medicineId;
+                for (Medicine medicine: pharmacy.getMedicines()){
+                    if (medicine.getId() == medicineId){
+                        pharmacy.getMedicines().remove(medicine);
+                        return "Ийгиликтуу очтуу";
                     }
                 }
             }
@@ -93,12 +88,13 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public List<Medicine> sortByPrice(String ascOrDesc) {
-        if (ascOrDesc.equalsIgnoreCase("999")){
+        if (ascOrDesc.equalsIgnoreCase("asc")){
             DataBase.medicines.sort(Comparator.comparingInt(Medicine::getPrice));
             return DataBase.medicines;
-        }else if (ascOrDesc.equalsIgnoreCase("1111")){
+        }else if (ascOrDesc.equalsIgnoreCase("desc")){
             Comparator<Medicine>medicineComparator = Comparator.comparingInt(Medicine::getPrice).reversed();
             DataBase.medicines.sort(medicineComparator);
+            return DataBase.medicines;
         }
         return null;
     }
@@ -111,18 +107,20 @@ public class MedicineServiceImpl implements MedicineService {
         }else if (ascOrDesc.equalsIgnoreCase("desc")){
             Comparator<Medicine>medicineComparator = Comparator.comparing(Medicine::getDateOfDelivery).reversed();
             DataBase.medicines.sort(medicineComparator);
+            return DataBase.medicines;
         }
         return null;
     }
 
     @Override
     public List<Medicine> sortByExpirationDate(String ascOrDesc) {
-        if (ascOrDesc.equalsIgnoreCase("999")){
+        if (ascOrDesc.equalsIgnoreCase("asc")){
             DataBase.medicines.sort(Comparator.comparing(Medicine::getExpirationDate));
             return DataBase.medicines;
-        }else if (ascOrDesc.equalsIgnoreCase("1111")){
+        }else if (ascOrDesc.equalsIgnoreCase("desc")){
             Comparator<Medicine>medicineComparator = Comparator.comparing(Medicine::getExpirationDate).reversed();
             DataBase.medicines.sort(medicineComparator);
+            return DataBase.medicines;
         }
         return null;
     }

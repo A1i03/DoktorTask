@@ -9,7 +9,7 @@ public interface PharmacyService {
 
     List<Pharmacy> getAllPharmacy();
 
-    Pharmacy gertByIdPharmacy(Long pharmacyId);
+    Pharmacy getByIdPharmacy(Long pharmacyId);
 
     String updatePharmacyById(Long pharmacyId, Pharmacy newPharmacy);
 
